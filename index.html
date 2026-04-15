@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>基礎課程 佛法會考線上題庫</title>
   <style>
     * {
@@ -40,7 +41,7 @@
 
     .subtitle {
       color: #6b7280;
-      font-size:18px;
+      font-size: 18px;
     }
 
     .grid {
@@ -75,29 +76,29 @@
     .btn-primary {
       background: #bbc8d8;
       color: #4a4a4a;
-      font-size:24px;
+      font-size: 24px;
     }
 
     .btn-secondary {
       background: #e5e7eb;
       color: #4a4a4a;
-      font-size:25px;      
+      font-size: 25px;
     }
 
     .btn-success {
       background: #e8cf8f;
-      color: #4a4a4a ;
-      font-size:25px;
+      color: #4a4a4a;
+      font-size: 25px;
     }
 
     .btn-danger {
       background: #dc2626;
-      color: #4a4a4a ;
+      color: #4a4a4a;
     }
 
     .btn-warning {
       background: #ffd44c;
-      color: #4a4a4a ;
+      color: #4a4a4a;
     }
 
     .btn-option {
@@ -211,28 +212,26 @@
       margin-top: 16px;
     }
 
-/* 讓小測驗設定頁面內容置中 */
-#quizSetupView {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 水平置中 */
-  text-align: center;  /* 文字內容置中 */
-  font-size: 17px;
-}
+    #quizSetupView {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      font-size: 17px;
+    }
 
-#quizSetupView ul {
-  list-style-position: inside; /* 讓清單的小圓點也跟著置中 */
-  padding-left: 0;
-  text-align: left; /* 如果希望清單文字靠左但整體置中，可保留此行；若要文字也置中則改為 center */
-  display: inline-block; /* 配合父層 text-align center 達成清單整體置中 */
-  font-size: 17px;
-}
+    #quizSetupView ul {
+      list-style-position: inside;
+      padding-left: 0;
+      text-align: left;
+      display: inline-block;
+      font-size: 17px;
+    }
 
-#quizSetupView .top-actions {
-  justify-content: center; /* 讓下方的按鈕水平置中 */
-  width: 100%;
-}
-
+    #quizSetupView .top-actions {
+      justify-content: center;
+      width: 100%;
+    }
 
     .progress {
       margin-top: 12px;
@@ -280,7 +279,6 @@
       opacity: 0.9;
     }
 
-    /* modal */
     .modal-mask {
       position: fixed;
       inset: 0;
@@ -349,7 +347,6 @@
     <div id="homeView" class="hidden">
       <div class="card title">
         <h1>基礎課程 佛法會考線上題庫</h1>
-        
       </div>
 
       <div class="card">
@@ -373,7 +370,6 @@
     <div id="practiceView" class="hidden card">
       <div class="meta">
         <span class="pill" id="practiceTopicPill"></span>
-       
       </div>
 
       <div class="progress" id="practiceProgress"></div>
@@ -396,7 +392,7 @@
         <li>選擇題 30 題</li>
         <li>是非題 30 題</li>
       </ul>
-      
+
       <div class="top-actions">
         <button class="btn-success" onclick="startQuiz()">開始測驗</button>
         <button class="btn-secondary" onclick="goHome()">回主畫面</button>
@@ -406,7 +402,6 @@
     <div id="quizView" class="hidden card">
       <div class="meta">
         <span class="pill" id="quizTopicPill"></span>
-      
       </div>
 
       <div class="progress" id="quizProgress"></div>
@@ -478,54 +473,8 @@
   </div>
 
   <script>
-
-const API_BASE = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbw93TH8FD20kLZxlncuiUsXc_AkNXrDiY_nIOscsQ-OKDGjxMItdar8WVQMn9WIs90s/exec';
-
-function jsonpRequest(params = {}) {
-  return new Promise((resolve, reject) => {
-    const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-    const script = document.createElement('script');
-
-    params.prefix = callbackName;
-
-    const query = new URLSearchParams(params).toString();
-    script.src = `${API_BASE}?${query}`;
-
-    let finished = false;
-
-    window[callbackName] = function(response) {
-      finished = true;
-      cleanup();
-      resolve(response);
-    };
-
-    script.onerror = function() {
-      cleanup();
-      reject(new Error('API 載入失敗'));
-    };
-
-    const timer = setTimeout(() => {
-      if (!finished) {
-        cleanup();
-        reject(new Error('API 回應逾時'));
-      }
-    }, 15000);
-
-    function cleanup() {
-      clearTimeout(timer);
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-      try {
-        delete window[callbackName];
-      } catch (e) {
-        window[callbackName] = undefined;
-      }
-    }
-
-    document.body.appendChild(script);
-  });
-}
+    // ★★★ 改成你自己的 GAS Web App 網址 ★★★
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbwiu7G_UsULB1tyQdSQAo4cqQEc2Yt1LnZ5r6g87iD69Mbl6nC9fAq6pA0J_-LSZDpC/exec';
 
     let allQuestions = [];
     let allTopics = [];
@@ -540,7 +489,51 @@ function jsonpRequest(params = {}) {
     let quizAnswers = {};
     let quizWrongList = [];
 
-    // --- 自訂彈窗控制函式 ---
+    function jsonpRequest(params = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const script = document.createElement('script');
+
+        params.prefix = callbackName;
+        const query = new URLSearchParams(params).toString();
+        script.src = `${API_BASE}?${query}`;
+
+        let finished = false;
+
+        window[callbackName] = function(response) {
+          finished = true;
+          cleanup();
+          resolve(response);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error('API 載入失敗'));
+        };
+
+        const timer = setTimeout(() => {
+          if (!finished) {
+            cleanup();
+            reject(new Error('API 回應逾時'));
+          }
+        }, 15000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+          try {
+            delete window[callbackName];
+          } catch (e) {
+            window[callbackName] = undefined;
+          }
+        }
+
+        document.body.appendChild(script);
+      });
+    }
+
     function showAlert(text, title = '🌟溫馨提醒') {
       document.getElementById('alertTitle').textContent = title;
       document.getElementById('alertText').textContent = text;
@@ -564,26 +557,24 @@ function jsonpRequest(params = {}) {
     function closeConfirm() {
       document.getElementById('customConfirmModal').classList.add('hidden');
     }
-    // -----------------------
 
- async function init() {
-  try {
-    const response = await jsonpRequest({ action: 'questions' });
+    async function init() {
+      try {
+        const response = await jsonpRequest({ action: 'questions' });
 
-    if (!response || !response.success) {
-      throw new Error(response && response.message ? response.message : '資料載入失敗');
+        if (!response || !response.success) {
+          throw new Error(response && response.message ? response.message : '資料載入失敗');
+        }
+
+        allQuestions = Array.isArray(response.data) ? response.data : [];
+        allTopics = [...new Set(allQuestions.map(q => q.topic).filter(Boolean))];
+
+        buildPracticeTopicButtons();
+        showOnly('homeView');
+      } catch (err) {
+        document.getElementById('loadingView').innerHTML = '載入失敗：' + (err.message || err);
+      }
     }
-
-    allQuestions = Array.isArray(response.data) ? response.data : [];
-    allTopics = [...new Set(allQuestions.map(q => q.topic).filter(Boolean))];
-
-    buildPracticeTopicButtons();
-    showOnly('homeView');
-  } catch (err) {
-    document.getElementById('loadingView').innerHTML =
-      '載入失敗：' + (err.message || err);
-  }
-}
 
     function showOnly(viewId) {
       const ids = [
@@ -695,7 +686,6 @@ function jsonpRequest(params = {}) {
       practiceAnswered = false;
 
       document.getElementById('practiceTopicPill').textContent = `主題：${q.topic || '未分類'}`;
-     // document.getElementById('practiceTypePill').textContent = q.type === 'mc' ? '選擇題' : '是非題';
       document.getElementById('practiceProgress').textContent = `第 ${practiceIndex + 1} / ${practicePool.length} 題`;
       document.getElementById('practiceQuestion').textContent = q.question || '';
 
@@ -745,18 +735,17 @@ function jsonpRequest(params = {}) {
         ? 'result-box result-correct'
         : 'result-box result-wrong';
 
-resultDiv.innerHTML = `
-  <div style="font-size: 1.4rem; margin-bottom: 8px;">
-    <strong>${correct ? '答對了！' : '答錯了！'}</strong>
-  </div>
-  <div style="font-size: 1.3rem;">
-    正確答案：${escapeHtml(q.answer)}${correctOption ? `．${escapeHtml(correctOption.text)}` : ''}
-  </div>
-  <div style="font-size: 1.3rem;">
-    解析：${q.explanation ? escapeHtml(q.explanation) : '本題暫無解析'}
-  </div>
-`;
-
+      resultDiv.innerHTML = `
+        <div style="font-size: 1.4rem; margin-bottom: 8px;">
+          <strong>${correct ? '答對了！' : '答錯了！'}</strong>
+        </div>
+        <div style="font-size: 1.3rem;">
+          正確答案：${escapeHtml(q.answer)}${correctOption ? `．${escapeHtml(correctOption.text)}` : ''}
+        </div>
+        <div style="font-size: 1.3rem;">
+          解析：${q.explanation ? escapeHtml(q.explanation) : '本題暫無解析'}
+        </div>
+      `;
 
       document.getElementById('practiceNextBtn').classList.remove('hidden');
     }
@@ -865,13 +854,11 @@ resultDiv.innerHTML = `
       renderQuizQuestion();
       showOnly('quizView');
     }
-    
 
     function renderQuizQuestion() {
       const q = quizPool[quizIndex];
 
       document.getElementById('quizTopicPill').textContent = `主題：${q.topic || '未分類'}`;
-     // document.getElementById('quizTypePill').textContent = q.type === 'mc' ? '選擇題' : '是非題';
       document.getElementById('quizProgress').textContent = `第 ${quizIndex + 1} / ${quizPool.length} 題`;
       document.getElementById('quizQuestion').textContent = q.question || '';
 
@@ -912,7 +899,7 @@ resultDiv.innerHTML = `
 
       if (!quizAnswers[currentQuestionUid]) {
         showAlert("你這一題還沒有作答喔！");
-        return; 
+        return;
       }
 
       if (quizIndex < quizPool.length - 1) {
