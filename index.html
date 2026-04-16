@@ -101,6 +101,12 @@
       color: #4a4a4a;
     }
 
+    .btn-classic {
+      background: #c7d9a5;
+      color: #4a4a4a;
+      font-size: 24px;
+    }
+
     .btn-option {
       width: 100%;
       text-align: left;
@@ -353,6 +359,7 @@
         <div class="grid grid-2">
           <button class="btn-primary" onclick="showPracticeSetup()">日常練習</button>
           <button class="btn-success" onclick="showQuizSetup()">模擬測驗</button>
+          <button class="btn-classic" onclick="goToClassicRecite()">經典背誦</button>
         </div>
       </div>
     </div>
@@ -474,7 +481,10 @@
 
   <script>
     // ★★★ 改成你自己的 GAS Web App 網址 ★★★
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbywNWH0x0civ5U24zxGRvgT8_wP6-f45V_y1BN9BOkz_RPsH2ooeg5x1a0RVlGh0mGo/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbyipeetx--AdVdvVhr2-zt4OZqJOe8u1T6JAK6lNfodQesjL4PlHTshZDn0HXBnx5SizQ/exec';
+
+    // 經典背誦頁面連結
+    const CLASSIC_RECITE_URL = 'https://script.google.com/macros/s/AKfycbxm92hxyhKvJsmbVnqHacWhXrQi68tWlL33jpJrajD9ZJpvll2yGlFCa9MmY5YaTzLn/exec';
 
     let allQuestions = [];
     let allTopics = [];
@@ -532,6 +542,10 @@
 
         document.body.appendChild(script);
       });
+    }
+
+    function goToClassicRecite() {
+      window.open(CLASSIC_RECITE_URL, '_blank');
     }
 
     function showAlert(text, title = '🌟溫馨提醒') {
