@@ -1,170 +1,789 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>經典背誦</title>
-  <style>
-    :root {
-      --bg: #94B5B2;
-      --card: #d3dcd8;
-      --text: #2f3a3a;
-      --btn: #Faf6f1;
-      --btn-text: #4a4a4a;
-      --accent: #8D6E63;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 720px;
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.10);
-      padding: 32px 24px;
-      text-align: center;
-    }
-
-    h1 {
-      margin: 0 0 16px;
-      font-size: 34px;
-      color: #4E342E;
-      letter-spacing: 2px;
-    }
-
-    .desc {
-      font-size: 20px;
-      line-height: 1.9;
-      margin: 0 0 24px;
-    }
-
-    .status {
-      font-size: 18px;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      background: var(--btn);
-      color: var(--btn-text);
-      padding: 12px 18px;
-      font-size: 18px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      min-width: 180px;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      opacity: 0.96;
-    }
-
-    .btn-primary {
-      background: #c7d9a5;
-    }
-
-    .btn-secondary {
-      background: #bbc8d8;
-    }
-
-    .note {
-      margin-top: 22px;
-      font-size: 15px;
-      line-height: 1.8;
-      color: #6b7280;
-    }
-
-    @media (max-width: 640px) {
-      h1 {
-        font-size: 28px;
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>經典背誦</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #8D6E63;
+        --primary-dark: #4E342E;
+        --bg: #94B5B2;
+        --card: #ffffff;
       }
 
-      .desc {
+      body {
+        background-color: var(--bg);
+        color: #333;
+        font-family: 'Noto Sans TC', sans-serif;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .view {
+        display: none;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+
+      .active-view {
+        display: block;
+      }
+
+      .main-title {
+        font-family: "Kaiti", "STKaiti", "BiauKai", "KaiTi", "Noto Serif TC", serif;
+        font-size: clamp(36px, 10vw, 52px);
+        font-weight: bold;
+        color: var(--primary-dark);
+        text-align: center;
+        margin: 20px 0 40px;
+        letter-spacing: 4px;
+        text-shadow: 1px 1px 0px rgba(255,255,255,0.5), 2px 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .category-header {
+        font-size: 24px;
+        color: #5D4037;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-left: 6px solid var(--primary);
+        padding-left: 10px;
+        font-weight: 700;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+      }
+
+      .theme-card {
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        cursor: pointer;
+        border: 1px solid #EFEBE9;
+        overflow: hidden;
+        transition: transform 0.2s;
+      }
+
+      .theme-card:active {
+        transform: scale(0.96);
+      }
+
+      .card-content {
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        color: var(--primary-dark);
+      }
+
+      .nav-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        background: #d3dcd8;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      }
+
+      .back-btn {
+        font-size: 28px;
+        cursor: pointer;
+        color: var(--primary);
+        padding: 0 10px;
+        min-width: 40px;
+        text-align: center;
+      }
+
+      .nav-title {
+        font-size: 20px;
+        font-weight: 700;
+        flex-grow: 1;
+        text-align: center;
+        color: var(--primary-dark);
+      }
+
+      .home-btn {
+        display: inline-block;
+        background:#Faf6f1;
+        color: #4a4a4a;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        white-space: nowrap;
+      }
+
+      .home-btn:active {
+        transform: scale(0.98);
+      }
+
+      .scripture-item {
+        background:#d3dcd8;
+        color: #4a4a4a;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      }
+
+      .scripture-text {
+        font-size: 22px;
+        line-height: 2.0;
+        color: #2c2c2c;
+        font-weight: 500;
+        margin-bottom: 15px;
+      }
+
+      .progress-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+      }
+
+      .stage-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #Faf6f1;
+        color: #4a4a4a;
+        border-radius: 12px;
+        padding: 10px 5px;
+        cursor: pointer;
+      }
+
+      .stage-name {
+        font-size: 20px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .done-s1 {
+        background-color: #E8F5E9;
+        border-color: #81C784;
+        color: #2E7D32;
+      }
+
+      .done-s2 {
+        background-color: #E3F2FD;
+        border-color: #64B5F6;
+        color: #1565C0;
+      }
+
+      .done-s3 {
+        background-color: #FFF3E0;
+        border-color: #FFB74D;
+        color: #EF6C00;
+      }
+
+      #practice-view {
+        min-height: 100vh;
+        padding-bottom: 140px;
+      }
+
+      #practice-container {
+        background:#d3dcd8;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        font-size: 26px;
+        line-height: 2.2;
+        font-weight: 500;
+        min-height: 200px;
+      }
+
+      .cloze-box {
+        display: inline-block;
+        min-width: 60px;
+        height: auto;
+        border-bottom: 3px solid #ccc;
+        color: var(--primary);
+        font-weight: bold;
+        text-align: center;
+        margin: 0 4px;
+        padding: 0 5px;
+        vertical-align: baseline;
+        cursor: pointer;
+      }
+
+      .cloze-active {
+        border-bottom: 3px solid #FFB74D;
+        background-color: #FFF3E0;
+      }
+
+      .cloze-input {
+        border: none;
+        border-bottom: 2px solid var(--primary);
+        background: #FAFAFA;
+        font-size: 24px;
+        color: var(--primary-dark);
+        font-weight: bold;
+        text-align: center;
+        margin: 0 4px;
+        padding: 0 5px;
+        border-radius: 4px;
+        outline: none;
+        vertical-align: baseline;
+        font-family: inherit;
+      }
+
+      #action-dock {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #EFEBE9;
+        padding: 20px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        z-index: 100;
+      }
+
+      .word-btn {
+        background-color: white;
+        border: 2px solid var(--primary);
+        color: #5D4037;
+        font-size: 22px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 3px 0 #6D4C41;
+      }
+
+      .word-btn:active {
+        transform: translateY(3px);
+        box-shadow: none;
+      }
+
+      .word-used {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .ctrl-btn {
+        border: none;
+        font-size: 20px;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      .btn-check {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-peek {
+        background-color: #FFB74D;
+        color: #5D4037;
+      }
+
+      .btn-pass {
+        background-color: #81C784;
+        color: #1B5E20;
+      }
+
+      #overlay-success {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(255,255,255,0.95);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .lotus-anim {
+        font-size: 100px;
+        animation: bloom 0.8s ease-out;
+      }
+
+      @keyframes bloom {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .loading-text {
+        text-align: center;
+        padding: 50px 20px;
+        color: #6D4C41;
         font-size: 18px;
       }
 
-      .btn {
-        width: 100%;
-      }
-    }
-  </style>
-
-  <script>
-    // ===== 你的首頁 GitHub 網址 =====
-    const HOME_PAGE_URL = 'https://5mingct.github.io/5mingtest/';
-
-    // ===== 你的 GAS 經典背誦網址 =====
-    const CLASSIC_RECITE_GAS_URL = 'https://script.google.com/macros/s/AKfycbxyUssFM9jjVWhGt_nS3yNaOA1j28M2Zqe59bbqu0Awa9ElCWXPm9TGcbDhEGchnIZn/exec';
-
-    function goHome() {
-      window.location.href = HOME_PAGE_URL;
-    }
-
-    function goClassicRecite() {
-      window.location.href = CLASSIC_RECITE_GAS_URL;
-    }
-
-    window.onload = function () {
-      const status = document.getElementById('statusText');
-
-      if (!CLASSIC_RECITE_GAS_URL) {
-        status.textContent = '尚未設定經典背誦網址。';
-        return;
+      #overlay-alert {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
       }
 
-      status.textContent = '即將前往經典背誦頁面...';
+      .alert-box {
+        width: min(92vw, 420px);
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        overflow: hidden;
+        animation: alertPop 0.18s ease-out;
+      }
 
-      // 0.8 秒後自動跳轉
-      setTimeout(() => {
-        window.location.href = CLASSIC_RECITE_GAS_URL;
-      }, 800);
-    };
-  </script>
-</head>
-<body>
-  <div class="card">
-    <h1>經典背誦</h1>
-    <p class="desc">
-      正在為您開啟經典背誦頁面。<br>
-      若未自動跳轉，請按下方按鈕。
-    </p>
+      @keyframes alertPop {
+        from {
+          transform: scale(0.95);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
 
-    <div id="statusText" class="status">準備中...</div>
+      .alert-content {
+        padding: 28px 22px 18px;
+        text-align: center;
+        color: #4E342E;
+        font-size: 20px;
+        line-height: 1.8;
+        white-space: pre-line;
+      }
 
-    <div class="actions">
-      <button class="btn btn-primary" onclick="goClassicRecite()">進入經典背誦</button>
-      <button class="btn btn-secondary" onclick="goHome()">回主畫面</button>
+      .alert-actions {
+        padding: 0 20px 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .alert-ok-btn {
+        border: none;
+        background: var(--primary);
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 12px 32px;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      }
+
+      .alert-ok-btn:active {
+        transform: scale(0.98);
+      }
+
+      @media (max-width: 640px) {
+        .home-btn {
+          font-size: 14px;
+          padding: 8px 12px;
+        }
+
+        .nav-title {
+          font-size: 18px;
+        }
+
+        .alert-content {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="dashboard-view" class="view">
+      <div class="main-title">經典背誦</div>
+      <div id="theme-container"></div>
     </div>
 
-    <div class="note">
-      此頁面放在 GitHub，實際背誦功能仍由原本的 Google Apps Script 頁面提供。
+    <div id="scripture-view" class="view active-view">
+      <div class="nav-header">
+        <div class="back-btn"></div>
+        <div class="nav-title" id="page-title">載入中...</div>
+        <button class="home-btn" onclick="goHomePage()">回到主畫面</button>
+      </div>
+      <div id="scripture-list">
+        <div class="loading-text">恭請經文中...</div>
+      </div>
     </div>
-  </div>
-</body>
+
+    <div id="practice-view" class="view">
+      <div class="nav-header">
+        <div class="back-btn" onclick="showView('scripture-view')">✕</div>
+        <div class="nav-title" id="practice-title">練習</div>
+        <button class="home-btn" onclick="goHomePage()">回到主畫面</button>
+      </div>
+      <div id="practice-container"></div>
+      <div id="action-dock"></div>
+    </div>
+
+    <div id="overlay-success">
+      <div class="lotus-anim">🪷</div>
+      <h2 style="color:var(--primary-dark)">圓滿達成</h2>
+    </div>
+
+    <div id="overlay-alert" onclick="closeCustomAlert(event)">
+      <div class="alert-box" onclick="event.stopPropagation()">
+        <div class="alert-content" id="alert-message"></div>
+        <div class="alert-actions">
+          <button class="alert-ok-btn" onclick="closeCustomAlert()">確定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let scriptures = [];
+      let state = { sid: null, stage: 1, answers: [], blanks: [], currIdx: 0, cleanText: "" };
+
+      // ===== 請改成你自己的 GAS Web App 網址 =====
+      const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxmxTIn0IFp2kvqhVuEEVbtSw9Sy3jUmfj_YXTy0RPwXpuFPBaKrPJGf3S6gSIjcSHJ/exec';
+
+      // 主系統首頁網址
+      const HOME_PAGE_URL = 'https://5mingct.github.io/5mingtest/';
+
+      window.onload = async () => {
+        await initApp();
+      };
+
+      async function initApp() {
+        try {
+          const res = await fetchJson(`${GAS_API_URL}?action=defaultTheme`);
+
+          if (!res.success) {
+            throw new Error(res.message || '讀取主題失敗');
+          }
+
+          initDefaultTheme(res.data);
+        } catch (error) {
+          document.getElementById('page-title').innerText = '載入失敗';
+          document.getElementById('scripture-list').innerHTML =
+            `<div class="loading-text">資料載入失敗：${escapeHtml(error.message || '請稍後再試')}</div>`;
+        }
+      }
+
+      async function fetchJson(url) {
+        const response = await fetch(url, {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          throw new Error('網路連線失敗');
+        }
+
+        return await response.json();
+      }
+
+      function goHomePage() {
+        window.location.href = HOME_PAGE_URL;
+      }
+
+      function initDefaultTheme(theme) {
+        if (!theme) {
+          document.getElementById('page-title').innerText = '找不到主題';
+          document.getElementById('scripture-list').innerHTML =
+            "<div class='loading-text'>目前沒有可顯示的主題資料。</div>";
+          return;
+        }
+
+        loadScriptures(theme.id, theme.title);
+      }
+
+      async function loadScriptures(tid, title) {
+        showView('scripture-view');
+        document.getElementById('page-title').innerText = title;
+        document.getElementById('scripture-list').innerHTML =
+          "<div class='loading-text'>恭請經文中...</div>";
+
+        try {
+          const res = await fetchJson(`${GAS_API_URL}?action=scriptures&themeId=${encodeURIComponent(tid)}`);
+
+          if (!res.success) {
+            throw new Error(res.message || '讀取經文失敗');
+          }
+
+          scriptures = res.data || [];
+          drawScriptures();
+        } catch (error) {
+          document.getElementById('scripture-list').innerHTML =
+            `<div class="loading-text">經文載入失敗：${escapeHtml(error.message || '請稍後再試')}</div>`;
+        }
+      }
+
+      function drawScriptures() {
+        const con = document.getElementById('scripture-list');
+        con.innerHTML = "";
+
+        if (!scriptures.length) {
+          con.innerHTML = "<div class='loading-text'>目前此主題尚無經文資料。</div>";
+          return;
+        }
+
+        scriptures.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'scripture-item';
+          const txt = (s.text || '').replace(/\[|\]/g, '');
+
+          div.innerHTML = `
+            <div class="scripture-text">${escapeHtml(txt)}</div>
+            <div class="progress-area">
+              <div class="stage-btn ${s.progress.s1 ? 'done-s1' : ''}" onclick="startPractice('${escapeJs(s.id)}', 1)">
+                <div class="stage-name">配對填空</div>
+              </div>
+              <div class="stage-btn ${s.progress.s2 ? 'done-s2' : ''}" onclick="startPractice('${escapeJs(s.id)}', 2)">
+                <div class="stage-name">輸入作答</div>
+              </div>
+              <div class="stage-btn ${s.progress.s3 ? 'done-s3' : ''}" onclick="startPractice('${escapeJs(s.id)}', 3)">
+                <div class="stage-name">背誦練習</div>
+              </div>
+            </div>
+          `;
+          con.appendChild(div);
+        });
+      }
+
+      function startPractice(sid, stage) {
+        const s = scriptures.find(i => i.id === sid);
+        if (!s) return;
+
+        state = {
+          sid,
+          stage,
+          answers: [],
+          blanks: [],
+          currIdx: 0,
+          cleanText: (s.text || '').replace(/\[|\]/g, '')
+        };
+
+        showView('practice-view');
+        document.getElementById('practice-title').innerText =
+          `${['', '配對填空', '輸入作答', '背誦練習'][stage]} (${sid})`;
+
+        const con = document.getElementById('practice-container');
+        const dock = document.getElementById('action-dock');
+        con.innerHTML = "";
+        dock.innerHTML = "";
+
+        if (stage === 3) {
+          con.innerHTML = getHintHtml(state.cleanText);
+          dock.innerHTML = `
+            <button class="ctrl-btn btn-peek"
+              onmousedown="peek(true)"
+              onmouseup="peek(false)"
+              onmouseleave="peek(false)"
+              ontouchstart="peek(true)"
+              ontouchend="peek(false)">
+              按住提示
+            </button>
+            <button class="ctrl-btn btn-pass" onclick="finish()">圓滿背誦</button>
+          `;
+        } else {
+          let html = "";
+          (s.text || '').split(/(\[.*?\])/).forEach(p => {
+            if (p.startsWith('[') && p.endsWith(']')) {
+              const ans = p.slice(1, -1);
+              const idx = state.answers.length;
+              state.answers.push(ans);
+              state.blanks.push(null);
+
+              if (stage === 1) {
+                html += `<span class="cloze-box" id="b-${idx}" onclick="state.currIdx=${idx};updateFocus()"></span>`;
+              } else {
+                html += `<input type="text" class="cloze-input" id="in-${idx}" style="width:${Math.max(60, ans.length * 28)}px">`;
+              }
+            } else {
+              html += escapeHtml(p);
+            }
+          });
+
+          con.innerHTML = html;
+
+          if (stage === 1) {
+            [...state.answers].sort(() => Math.random() - 0.5).forEach(w => {
+              const b = document.createElement('div');
+              b.className = 'word-btn';
+              b.innerText = w;
+              b.onclick = (e) => fill(w, e.target);
+              dock.appendChild(b);
+            });
+            updateFocus();
+          } else {
+            dock.innerHTML = `<button class="ctrl-btn btn-check" onclick="checkStage2()">填完檢查</button>`;
+          }
+        }
+      }
+
+      function fill(word, btn) {
+        if (state.currIdx >= state.answers.length) return;
+
+        const old = state.blanks[state.currIdx];
+        if (old) {
+          document.querySelectorAll('.word-btn.word-used').forEach(b => {
+            if (b.innerText === old) b.classList.remove('word-used');
+          });
+        }
+
+        state.blanks[state.currIdx] = word;
+        document.getElementById(`b-${state.currIdx}`).innerText = word;
+        btn.classList.add('word-used');
+
+        const next = state.blanks.indexOf(null);
+        if (next !== -1) {
+          state.currIdx = next;
+          updateFocus();
+        } else {
+          updateFocus(-1);
+          checkStage1();
+        }
+      }
+
+      function checkStage1() {
+        if (state.blanks.every((v, i) => v === state.answers[i])) {
+          setTimeout(() => finish(), 300);
+        } else {
+          showCustomAlert("順序有點出入喔！\n請重新來過，再一次加深印象。", () => {
+            startPractice(state.sid, 1);
+          });
+        }
+      }
+
+      function checkStage2() {
+        let ok = true;
+
+        state.answers.forEach((ans, i) => {
+          const el = document.getElementById(`in-${i}`);
+          if (!el) return;
+
+          if (el.value.trim() === ans) {
+            el.style.color = "#2E7D32";
+            el.style.borderBottom = "3px solid #81C784";
+            el.style.backgroundColor = "#E8F5E9";
+            el.readOnly = true;
+          } else {
+            ok = false;
+            el.style.color = "#D32F2F";
+            el.style.borderBottom = "3px solid #EF9A9A";
+            el.style.backgroundColor = "#FFEBEE";
+          }
+        });
+
+        if (ok) {
+          setTimeout(() => finish(), 300);
+        } else {
+          showCustomAlert("還有部分未正確，請修正紅框處。");
+        }
+      }
+
+      function peek(show) {
+        document.getElementById('practice-container').innerHTML =
+          show ? escapeHtml(state.cleanText) : getHintHtml(state.cleanText);
+      }
+
+      function getHintHtml(txt) {
+        let res = "";
+        let next = true;
+
+        for (let c of txt) {
+          if ("，。、；：？！「」『』《》（）()[],.".includes(c)) {
+            res += escapeHtml(c);
+            next = true;
+          } else if (c === '\n') {
+            res += '<br>';
+            next = true;
+          } else if (c === ' ' || c === '　') {
+            res += c;
+          } else {
+            res += next ? escapeHtml(c) : '＿';
+            next = false;
+          }
+        }
+
+        return `<div style="color:#aaa; letter-spacing:2px;">${res}</div>`;
+      }
+
+      function updateFocus(idx = state.currIdx) {
+        document.querySelectorAll('.cloze-box').forEach((b, i) => {
+          b.classList.toggle('cloze-active', i === idx);
+        });
+      }
+
+      function finish() {
+        const s = scriptures.find(i => i.id === state.sid);
+        if (s) s.progress['s' + state.stage] = 1;
+
+        const ov = document.getElementById('overlay-success');
+        ov.style.display = 'flex';
+
+        setTimeout(() => {
+          ov.style.display = 'none';
+          showView('scripture-view');
+          drawScriptures();
+        }, 1500);
+      }
+
+      function showView(vid) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(vid).classList.add('active-view');
+        window.scrollTo(0, 0);
+      }
+
+      let alertCallback = null;
+
+      function showCustomAlert(message, callback = null) {
+        document.getElementById('alert-message').innerText = message;
+        document.getElementById('overlay-alert').style.display = 'flex';
+        alertCallback = callback;
+      }
+
+      function closeCustomAlert(event) {
+        if (event && event.target && event.target.id !== 'overlay-alert') return;
+
+        document.getElementById('overlay-alert').style.display = 'none';
+
+        if (typeof alertCallback === 'function') {
+          const cb = alertCallback;
+          alertCallback = null;
+          cb();
+        } else {
+          alertCallback = null;
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function escapeJs(str) {
+        return String(str)
+          .replace(/\\/g, '\\\\')
+          .replace(/'/g, "\\'");
+      }
+    </script>
+  </body>
 </html>
