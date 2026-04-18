@@ -418,9 +418,9 @@
       <div id="theme-container"></div>
     </div>
 
-    <div id="scripture-view" class="view active-view">
+    <div id="scripture-view" class="view">
       <div class="nav-header">
-        <div class="back-btn"></div>
+        <div class="back-btn" id="scripture-back-btn" onclick="goToDashboard()">←</div>
         <div class="nav-title" id="page-title">載入中...</div>
         <button class="home-btn" onclick="goHomePage()">回到主畫面</button>
       </div>
@@ -454,14 +454,14 @@
     </div>
 
     <script>
+      const JSON_URL = '../data/classic-recite.json';
+      const HOME_PAGE_URL = '../';
+
+      let allItems = [];
+      let themes = [];
       let scriptures = [];
+      let currentThemeId = null;
       let state = { sid: null, stage: 1, answers: [], blanks: [], currIdx: 0, cleanText: "" };
-
-      // ===== 請改成你自己的 GAS Web App 網址 =====
-      const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxmxTIn0IFp2kvqhVuEEVbtSw9Sy3jUmfj_YXTy0RPwXpuFPBaKrPJGf3S6gSIjcSHJ/exec';
-
-      // 主系統首頁網址
-      const HOME_PAGE_URL = 'https://5mingct.github.io/5mingtest/';
 
       window.onload = async () => {
         await initApp();
@@ -469,27 +469,36 @@
 
       async function initApp() {
         try {
-          const res = await fetchJson(`${GAS_API_URL}?action=defaultTheme`);
+          const data = await fetchJson(JSON_URL);
+          allItems = Array.isArray(data) ? data : [];
 
-          if (!res.success) {
-            throw new Error(res.message || '讀取主題失敗');
+          if (!allItems.length) {
+            throw new Error('JSON 內沒有資料');
           }
 
-          initDefaultTheme(res.data);
+          themes = buildThemes(allItems);
+
+          if (themes.length === 1) {
+            loadTheme(themeKey(themes[0]), themes[0].title);
+          } else {
+            drawThemeCards();
+            showView('dashboard-view');
+          }
         } catch (error) {
-          document.getElementById('page-title').innerText = '載入失敗';
-          document.getElementById('scripture-list').innerHTML =
+          document.getElementById('theme-container').innerHTML =
             `<div class="loading-text">資料載入失敗：${escapeHtml(error.message || '請稍後再試')}</div>`;
+          showView('dashboard-view');
         }
       }
 
       async function fetchJson(url) {
         const response = await fetch(url, {
-          method: 'GET'
+          method: 'GET',
+          cache: 'no-store'
         });
 
         if (!response.ok) {
-          throw new Error('網路連線失敗');
+          throw new Error(`網路連線失敗（${response.status}）`);
         }
 
         return await response.json();
@@ -499,36 +508,112 @@
         window.location.href = HOME_PAGE_URL;
       }
 
-      function initDefaultTheme(theme) {
-        if (!theme) {
-          document.getElementById('page-title').innerText = '找不到主題';
-          document.getElementById('scripture-list').innerHTML =
-            "<div class='loading-text'>目前沒有可顯示的主題資料。</div>";
+      function buildThemes(items) {
+        const map = new Map();
+
+        items.forEach(item => {
+          const id = item.themeId || item.source || 'default';
+          const title = item.source || item.themeId || '經典背誦';
+
+          if (!map.has(id)) {
+            map.set(id, {
+              id,
+              title,
+              count: 0
+            });
+          }
+
+          map.get(id).count += 1;
+        });
+
+        return Array.from(map.values());
+      }
+
+      function themeKey(theme) {
+        return theme.id;
+      }
+
+      function drawThemeCards() {
+        const container = document.getElementById('theme-container');
+        container.innerHTML = '';
+
+        if (!themes.length) {
+          container.innerHTML = "<div class='loading-text'>目前沒有可顯示的主題資料。</div>";
           return;
         }
 
-        loadScriptures(theme.id, theme.title);
+        const title = document.createElement('div');
+        title.className = 'category-header';
+        title.textContent = '主題列表';
+        container.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'card-grid';
+
+        themes.forEach(theme => {
+          const card = document.createElement('div');
+          card.className = 'theme-card';
+          card.onclick = () => loadTheme(themeKey(theme), theme.title);
+          card.innerHTML = `
+            <div class="card-content">
+              <div>${escapeHtml(theme.title)}</div>
+              <div style="margin-top:8px;font-size:14px;font-weight:500;">共 ${theme.count} 段</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
       }
 
-      async function loadScriptures(tid, title) {
+      function goToDashboard() {
+        if (themes.length <= 1) {
+          goHomePage();
+          return;
+        }
+
+        drawThemeCards();
+        showView('dashboard-view');
+      }
+
+      function loadTheme(tid, title) {
+        currentThemeId = tid;
         showView('scripture-view');
         document.getElementById('page-title').innerText = title;
+
+        document.getElementById('scripture-back-btn').style.visibility =
+          themes.length > 1 ? 'visible' : 'hidden';
+
         document.getElementById('scripture-list').innerHTML =
           "<div class='loading-text'>恭請經文中...</div>";
 
-        try {
-          const res = await fetchJson(`${GAS_API_URL}?action=scriptures&themeId=${encodeURIComponent(tid)}`);
+        const filtered = allItems
+          .filter(item => (item.themeId || item.source || 'default') === tid)
+          .map(item => normalizeScripture(item));
 
-          if (!res.success) {
-            throw new Error(res.message || '讀取經文失敗');
-          }
+        scriptures = filtered;
+        drawScriptures();
+      }
 
-          scriptures = res.data || [];
-          drawScriptures();
-        } catch (error) {
-          document.getElementById('scripture-list').innerHTML =
-            `<div class="loading-text">經文載入失敗：${escapeHtml(error.message || '請稍後再試')}</div>`;
-        }
+      function normalizeScripture(item) {
+        const fullText = item.fullText || item.text || '';
+        const cleanText = item.cleanText || fullText.replace(/\[|\]/g, '');
+        const answers = Array.isArray(item.answers)
+          ? item.answers
+          : extractBracketAnswers(fullText);
+
+        return {
+          id: item.id || item.audioId || `item_${Math.random().toString(36).slice(2, 8)}`,
+          text: fullText,
+          cleanText,
+          answers,
+          progress: item.progress || { s1: 0, s2: 0, s3: 0 }
+        };
+      }
+
+      function extractBracketAnswers(text) {
+        const matches = String(text).match(/\[(.*?)\]/g) || [];
+        return matches.map(v => v.replace(/^\[|\]$/g, ''));
       }
 
       function drawScriptures() {
@@ -543,7 +628,7 @@
         scriptures.forEach(s => {
           const div = document.createElement('div');
           div.className = 'scripture-item';
-          const txt = (s.text || '').replace(/\[|\]/g, '');
+          const txt = (s.cleanText || '').trim();
 
           div.innerHTML = `
             <div class="scripture-text">${escapeHtml(txt)}</div>
@@ -573,12 +658,12 @@
           answers: [],
           blanks: [],
           currIdx: 0,
-          cleanText: (s.text || '').replace(/\[|\]/g, '')
+          cleanText: s.cleanText || (s.text || '').replace(/\[|\]/g, '')
         };
 
         showView('practice-view');
         document.getElementById('practice-title').innerText =
-          `${['', '配對填空', '輸入作答', '背誦練習'][stage]} (${sid})`;
+          `${['', '配對填空', '輸入作答', '背誦練習'][stage]}`;
 
         const con = document.getElementById('practice-container');
         const dock = document.getElementById('action-dock');
