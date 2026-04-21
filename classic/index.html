@@ -461,6 +461,7 @@
       let themes = [];
       let scriptures = [];
       let currentThemeId = null;
+      let currentScriptureId = null;
       let state = { sid: null, stage: 1, answers: [], blanks: [], currIdx: 0, cleanText: "" };
 
       window.onload = async () => {
@@ -628,6 +629,7 @@
         scriptures.forEach(s => {
           const div = document.createElement('div');
           div.className = 'scripture-item';
+          div.id = `scripture-${s.id}`;
           const txt = (s.cleanText || '').trim();
 
           div.innerHTML = `
@@ -651,6 +653,8 @@
       function startPractice(sid, stage) {
         const s = scriptures.find(i => i.id === sid);
         if (!s) return;
+
+        currentScriptureId = sid;
 
         state = {
           sid,
@@ -822,15 +826,27 @@
 
         setTimeout(() => {
           ov.style.display = 'none';
-          showView('scripture-view');
+          showView('scripture-view', false);
           drawScriptures();
+
+          if (currentScriptureId) {
+            requestAnimationFrame(() => {
+              const target = document.getElementById(`scripture-${currentScriptureId}`);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            });
+          }
         }, 1500);
       }
 
-      function showView(vid) {
+      function showView(vid, scrollTop = true) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
         document.getElementById(vid).classList.add('active-view');
-        window.scrollTo(0, 0);
+
+        if (scrollTop) {
+          window.scrollTo(0, 0);
+        }
       }
 
       let alertCallback = null;
