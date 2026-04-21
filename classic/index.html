@@ -655,7 +655,11 @@
         if (!s) return;
 
         currentScriptureId = sid;
-        lastScriptureScrollY = window.scrollY || window.pageYOffset || 0;
+
+        const scriptureView = document.getElementById('scripture-view');
+        if (scriptureView && scriptureView.classList.contains('active-view')) {
+          lastScriptureScrollY = window.scrollY || window.pageYOffset || 0;
+        }
 
         state = {
           sid,
@@ -823,15 +827,24 @@
         if (s) s.progress['s' + state.stage] = 1;
 
         const ov = document.getElementById('overlay-success');
+        const scriptureView = document.getElementById('scripture-view');
+
         ov.style.display = 'flex';
 
         setTimeout(() => {
           ov.style.display = 'none';
+
           showView('scripture-view', false);
+
+          scriptureView.style.visibility = 'hidden';
           drawScriptures();
 
           requestAnimationFrame(() => {
             window.scrollTo(0, lastScriptureScrollY);
+
+            requestAnimationFrame(() => {
+              scriptureView.style.visibility = 'visible';
+            });
           });
         }, 1500);
       }
