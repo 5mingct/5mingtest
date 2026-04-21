@@ -462,6 +462,7 @@
       let scriptures = [];
       let currentThemeId = null;
       let currentScriptureId = null;
+      let lastScriptureScrollY = 0;
       let state = { sid: null, stage: 1, answers: [], blanks: [], currIdx: 0, cleanText: "" };
 
       window.onload = async () => {
@@ -629,7 +630,6 @@
         scriptures.forEach(s => {
           const div = document.createElement('div');
           div.className = 'scripture-item';
-          div.id = `scripture-${s.id}`;
           const txt = (s.cleanText || '').trim();
 
           div.innerHTML = `
@@ -655,6 +655,7 @@
         if (!s) return;
 
         currentScriptureId = sid;
+        lastScriptureScrollY = window.scrollY || window.pageYOffset || 0;
 
         state = {
           sid,
@@ -829,14 +830,9 @@
           showView('scripture-view', false);
           drawScriptures();
 
-          if (currentScriptureId) {
-            requestAnimationFrame(() => {
-              const target = document.getElementById(`scripture-${currentScriptureId}`);
-              if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            });
-          }
+          requestAnimationFrame(() => {
+            window.scrollTo(0, lastScriptureScrollY);
+          });
         }, 1500);
       }
 
