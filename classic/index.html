@@ -516,6 +516,7 @@
       let currentThemeId = null;
       let currentScriptureId = null;
       let lastScriptureScrollY = 0;
+      let lastSelectedScriptureId = null;
       let state = { sid: null, stage: 1, answers: [], blanks: [], currIdx: 0, cleanText: "" };
 
       window.onload = async () => {
@@ -683,6 +684,7 @@
         scriptures.forEach(s => {
           const div = document.createElement('div');
           div.className = 'scripture-item';
+          div.dataset.sid = s.id;
           const txt = (s.cleanText || '').trim();
 
           div.innerHTML = `
@@ -709,8 +711,11 @@
 
         currentScriptureId = sid;
 
+        lastSelectedScriptureId = sid;
+
         const scriptureList = document.getElementById('scripture-list');
-        if (scriptureList) {
+        const scriptureView = document.getElementById('scripture-view');
+        if (scriptureList && scriptureView.classList.contains('active-view')) {
           lastScriptureScrollY = scriptureList.scrollTop || 0;
         }
 
@@ -895,7 +900,14 @@
           requestAnimationFrame(() => {
             const scriptureList = document.getElementById('scripture-list');
             if (scriptureList) {
-              scriptureList.scrollTop = lastScriptureScrollY;
+              const target = Array.from(document.querySelectorAll('.scripture-item'))
+                .find(el => el.dataset.sid === lastSelectedScriptureId);
+
+              if (target) {
+                scriptureList.scrollTop = Math.max(target.offsetTop - 20, 0);
+              } else {
+                scriptureList.scrollTop = lastScriptureScrollY;
+              }
             }
 
             requestAnimationFrame(() => {
