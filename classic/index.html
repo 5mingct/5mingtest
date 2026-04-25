@@ -178,6 +178,19 @@
         box-sizing: border-box;
       }
 
+      #scripture-list,
+      #practice-container,
+      #dashboard-view.active-view {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      #scripture-list::-webkit-scrollbar,
+      #practice-container::-webkit-scrollbar,
+      #dashboard-view.active-view::-webkit-scrollbar {
+        display: none;
+      }
+
       .scripture-item {
         background:#d3dcd8;
         color: #4a4a4a;
