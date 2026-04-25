@@ -91,6 +91,10 @@
         padding: 10px;
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+        position: sticky;
+        top: 0;
+        z-index: 99;
       }
 
       .back-btn {
@@ -422,7 +426,7 @@
       <div class="nav-header">
         <div class="back-btn" id="scripture-back-btn" onclick="goToDashboard()">←</div>
         <div class="nav-title" id="page-title">載入中...</div>
-        <button class="home-btn" onclick="goHomePage()">回到主畫面</button>
+        <button class="home-btn" onclick="goHomePage()">回主畫面</button>
       </div>
       <div id="scripture-list">
         <div class="loading-text">恭請經文中...</div>
